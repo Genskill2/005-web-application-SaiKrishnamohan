@@ -21,8 +21,9 @@ def search(field, value):
     # TBD
     conn=db.get_db()
     cursor=conn.cursor()
-    cursor.execute()
-    return ""
+    cursor.execute(f"select p.id, p.name, p.bought, p.sold, s.name from pet p, animal s,tag,tags_pets where p.id=tags_pets.pet and tags_pets.tag=tag.id and tag.name=?",[value])
+    pets=cursor.fetchall()
+    return render_template('index.html',pets=pets,order="asc")
 
 @bp.route("/")
 def dashboard():
