@@ -19,6 +19,9 @@ def format_date(d):
 @bp.route("/search/<field>/<value>")
 def search(field, value):
     # TBD
+    conn=db.get_db()
+    cursor=conn.cursor()
+    cursor.execute()
     return ""
 
 @bp.route("/")
@@ -94,24 +97,16 @@ def edit(pid):
                     tags = tags)
         return render_template("editpet.html", **data)
     elif request.method == "POST":
-        description1 = request.form.get('description')
+        description= request.form.get('description')
         sold = request.form.get("sold")
         # TODO Handle sold
         if sold:
-            cursor.execute("select p.name, p.bought, p.sold, p.description, s.name from pet p, animal s where p.species = s.id and p.id = ?", [pid])
-            pet = cursor.fetchone()
-            cursor.execute("select t.name from tags_pets tp, tag t where tp.pet = ? and tp.tag = t.id", [pid])
-            tags = (x[0] for x in cursor.fetchall())
-            name, bought, sold, description, species = pet
-            data = dict(id = pid,
-                        name = name,
-                        bought = format_date(bought),
-                        sold = datetime.date.today(),
-                        description = description1, #TODO Not being displayed
-                        species = species,
-                        tags = tags)
-            return render_template("petdetail.html", **data)
+            db.commit_db("UPDATE pet SET sold=? WHERE id=?",[datetime.date.today(),pid])
+        if description:
+            db.commit_db("UPDATE pet SET description=? WHERE id=?",[description,pid])
         return redirect(url_for("pets.pet_info", pid=pid), 302)
+    
+
         
     
 

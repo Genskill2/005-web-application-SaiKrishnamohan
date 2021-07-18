@@ -19,7 +19,14 @@ def close_db(e=None):
     db = g.pop('db', None)
     if db is not None:
         db.close()
-
+        
+def commit_db(string,lst):
+    db=get_db()
+    cursor=db.cursor()
+    cursor.execute(string,lst)
+    db.commit()
+    return db
+    
 def init_db():
     db = get_db()
     # Create the tables
